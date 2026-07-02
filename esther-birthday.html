@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>A Surprise for Esther 🎂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Caveat:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum: #2c1a3d;
+    --plum-deep: #1c1030;
+    --gold: #f0c05a;
+    --coral: #ff7a93;
+    --lavender: #c9a6ff;
+    --cream: #fff8ec;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    min-height:100dvh;
+    background: radial-gradient(circle at 20% 10%, #3a2456 0%, var(--plum) 45%, var(--plum-deep) 100%);
+    font-family:'Poppins', sans-serif;
+    color: var(--cream);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* floating shapes on login */
+  .float-shape{
+    position:fixed;
+    border-radius:50%;
+    opacity:0.35;
+    filter: blur(1px);
+    animation: drift 12s ease-in-out infinite;
+    pointer-events:none;
+    z-index:0;
+  }
+  @keyframes drift{
+    0%,100%{ transform: translateY(0px) translateX(0px); }
+    50%{ transform: translateY(-30px) translateX(10px); }
+  }
+
+  /* ---------- LOGIN SCREEN ---------- */
+  #login-screen{
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    position:relative;
+    z-index:1;
+  }
+  .card{
+    width:100%;
+    max-width:380px;
+    background: rgba(255,248,236,0.06);
+    border:1px solid rgba(240,192,90,0.35);
+    backdrop-filter: blur(10px);
+    border-radius:22px;
+    padding:34px 26px 28px;
+    text-align:center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    animation: rise 0.7s ease both;
+  }
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(24px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  .eyebrow{
+    font-size:13px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--lavender);
+    margin-bottom:6px;
+  }
+  .card h1{
+    font-family:'Caveat', cursive;
+    font-size:44px;
+    line-height:1;
+    margin: 0 0 4px;
+    color: var(--gold);
+  }
+  .card p.sub{
+    font-size:14px;
+    color: rgba(255,248,236,0.7);
+    margin:0 0 24px;
+  }
+  .field{
+    text-align:left;
+    margin-bottom:14px;
+  }
+  .field label{
+    display:block;
+    font-size:12px;
+    letter-spacing:0.5px;
+    color: rgba(255,248,236,0.65);
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px solid rgba(240,192,90,0.3);
+    background: rgba(0,0,0,0.2);
+    color: var(--cream);
+    font-family:'Poppins', sans-serif;
+    font-size:15px;
+    outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input:focus{
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(240,192,90,0.18);
+  }
+  .field input::placeholder{ color: rgba(255,248,236,0.35); }
+
+  #unlock-btn{
+    width:100%;
+    margin-top:10px;
+    padding:13px 14px;
+    border:none;
+    border-radius:12px;
+    background: linear-gradient(135deg, var(--gold), var(--coral));
+    color: var(--plum-deep);
+    font-family:'Poppins', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.3px;
+    cursor:pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  #unlock-btn:active{ transform: scale(0.97); }
+  #unlock-btn:hover{ box-shadow: 0 10px 24px rgba(240,192,90,0.35); }
+
+  .error-msg{
+    margin-top:14px;
+    font-size:13px;
+    color: var(--coral);
+    min-height:18px;
+    line-height:1.5;
+  }
+  .hint{
+    color: var(--lavender);
+    font-style: italic;
+  }
+
+  .shake{ animation: shake 0.4s; }
+  @keyframes shake{
+    10%,90%{ transform: translateX(-2px); }
+    20%,80%{ transform: translateX(4px); }
+    30%,50%,70%{ transform: translateX(-8px); }
+    40%,60%{ transform: translateX(8px); }
+  }
+
+  /* ---------- BIRTHDAY SCREEN ---------- */
+  #birthday-screen{
+    display:none;
+    min-height:100vh;
+    min-height:100dvh;
+    padding: 60px 20px 80px;
+    position:relative;
+    z-index:1;
+    text-align:center;
+  }
+  #birthday-screen.visible{ display:block; }
+
+  canvas#confetti-canvas{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:5;
+  }
+
+  .balloon-row{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:10px;
+  }
+  .balloon{
+    width:34px;
+    height:44px;
+    border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: bob 3.2s ease-in-out infinite;
+  }
+  .balloon:nth-child(1){ background: var(--coral); animation-delay:0s; }
+  .balloon:nth-child(2){ background: var(--gold); animation-delay:0.4s; }
+  .balloon:nth-child(3){ background: var(--lavender); animation-delay:0.8s; }
+  .balloon:nth-child(4){ background: #7fd6c2; animation-delay:1.2s; }
+  @keyframes bob{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-14px); }
+  }
+
+  .eyebrow-small{
+    font-size:13px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color: var(--lavender);
+    margin-top:18px;
+  }
+  #birthday-screen h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size: clamp(34px, 9vw, 58px);
+    margin: 6px 0 2px;
+    color: var(--cream);
+  }
+  #birthday-screen h1 span{
+    color: var(--gold);
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    display:block;
+    font-size: clamp(46px, 12vw, 76px);
+    line-height:1;
+    margin-top:2px;
+  }
+
+  .message-card{
+    max-width:520px;
+    margin: 30px auto 0;
+    background: rgba(255,248,236,0.06);
+    border:1px solid rgba(240,192,90,0.3);
+    border-radius:20px;
+    padding:26px 22px;
+    font-size:16px;
+    line-height:1.75;
+    color: rgba(255,248,236,0.92);
+    text-align:left;
+  }
+  .message-card p{ margin:0 0 14px; }
+  .message-card p:last-child{ margin-bottom:0; }
+  .signoff{
+    font-family:'Caveat', cursive;
+    font-size:26px;
+    color: var(--gold);
+    text-align:right;
+    margin-top:16px !important;
+  }
+
+  .stat-row{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-top:30px;
+  }
+  .stat{
+    background: rgba(0,0,0,0.2);
+    border:1px solid rgba(240,192,90,0.25);
+    border-radius:16px;
+    padding:16px 20px;
+    min-width:110px;
+  }
+  .stat .num{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:26px;
+    color: var(--gold);
+    display:block;
+  }
+  .stat .label{
+    font-size:11px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color: rgba(255,248,236,0.6);
+  }
+
+  .cake-wrap{
+    margin: 38px auto 6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  #blow-btn{
+    margin-top:18px;
+    padding:12px 22px;
+    border:none;
+    border-radius:999px;
+    background: transparent;
+    border:1.5px solid var(--gold);
+    color: var(--gold);
+    font-family:'Poppins', sans-serif;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    transition: all 0.2s;
+  }
+  #blow-btn:hover{ background: var(--gold); color: var(--plum-deep); }
+  #blow-btn:disabled{ opacity:0.4; cursor:default; background:transparent; color:var(--gold); }
+
+  .flame{ transition: opacity 0.4s, transform 0.4s; }
+  .flame.out{ opacity:0; transform: translateY(6px) scale(0.4); }
+
+  footer.foot{
+    margin-top:50px;
+    font-size:12px;
+    color: rgba(255,248,236,0.4);
+    letter-spacing:0.5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- decorative floating circles -->
+<div class="float-shape" style="width:120px;height:120px;background:var(--coral);top:8%;left:-30px;"></div>
+<div class="float-shape" style="width:90px;height:90px;background:var(--lavender);bottom:12%;right:-20px;animation-delay:2s;"></div>
+<div class="float-shape" style="width:60px;height:60px;background:var(--gold);top:60%;left:70%;animation-delay:4s;"></div>
+
+<!-- ================= LOGIN ================= -->
+<div id="login-screen">
+  <div class="card">
+    <div class="eyebrow">Private Invitation</div>
+    <h1>For Esther 🎈</h1>
+    <p class="sub">Enter your details to unlock today's surprise.</p>
+
+    <div class="field">
+      <label for="first-name">First name</label>
+      <input id="first-name" type="text" placeholder="First name" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="last-name">Last name</label>
+      <input id="last-name" type="text" placeholder="Last name" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" type="password" placeholder="Password" autocomplete="off">
+    </div>
+
+    <button id="unlock-btn">Unlock my surprise</button>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+</div>
+
+<!-- ================= BIRTHDAY PAGE ================= -->
+<canvas id="confetti-canvas"></canvas>
+<div id="birthday-screen">
+  <div class="balloon-row">
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+    <div class="balloon"></div>
+  </div>
+
+  <div class="eyebrow-small">Happy Birthday</div>
+  <h1>Esther<span>Ashifia Oye 🎉</span></h1>
+
+  <div class="message-card">
+    <p>Today isn't just another day on the calendar — it's the day the world got a little brighter, because it got you in it.</p>
+    <p>I hope today brings you the kind of joy that spills over into everyone around you, plenty of laughter, good food, and people who remind you how loved you are. You deserve every bit of it, and more.</p>
+    <p>Here's to another year of chasing your dreams, showing up as exactly who you are, and reminding the people around you what it looks like to shine.</p>
+    <p> Thanks  for everything you have done in my life, I cherish you and Appreciate you. Even tho i know i have been sturbborn. I Love You very much</p>
+    <p class="signoff">— Selorm</p>
+  </div>
+
+  <div class="cake-wrap">
+    <svg width="140" height="120" viewBox="0 0 140 120">
+      <rect x="20" y="70" width="100" height="40" rx="8" fill="#ff7a93"/>
+      <rect x="20" y="55" width="100" height="18" rx="6" fill="#f0c05a"/>
+      <rect x="30" y="40" width="80" height="18" rx="6" fill="#fff8ec"/>
+      <rect x="64" y="18" width="5" height="24" fill="#c9a6ff"/>
+      <rect x="86" y="18" width="5" height="24" fill="#c9a6ff"/>
+      <ellipse class="flame" id="flame1" cx="66.5" cy="14" rx="6" ry="9" fill="#f0c05a"/>
+      <ellipse class="flame" id="flame2" cx="88.5" cy="14" rx="6" ry="9" fill="#ff7a93"/>
+    </svg>
+    <button id="blow-btn">🎂 Tap to blow out the candles</button>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat"><span class="num">∞</span><span class="label">Reasons to smile</span></div>
+    <div class="stat"><span class="num">1</span><span class="label">Amazing Esther</span></div>
+    <div class="stat"><span class="num">100%</span><span class="label">Loved today</span></div>
+  </div>
+
+  <footer class="foot">made with care, just for you 💛</footer>
+</div>
+
+<script>
+  const firstNameInput = document.getElementById('first-name');
+  const lastNameInput = document.getElementById('last-name');
+  const passwordInput = document.getElementById('password');
+  const unlockBtn = document.getElementById('unlock-btn');
+  const errorMsg = document.getElementById('error-msg');
+  const loginScreen = document.getElementById('login-screen');
+  const birthdayScreen = document.getElementById('birthday-screen');
+  const card = document.querySelector('.card');
+
+  const VALID_FIRST = 'estherlyn';
+  const VALID_LAST = 'anum';
+  const VALID_PASSWORD = 'selorm';
+
+  function normalize(str){
+    return str.trim().toLowerCase();
+  }
+
+  function tryUnlock(){
+    const first = normalize(firstNameInput.value);
+    const last = normalize(lastNameInput.value);
+    const pass = normalize(passwordInput.value);
+
+    if(first === VALID_FIRST && last === VALID_LAST && pass === VALID_PASSWORD){
+      errorMsg.textContent = '';
+      loginScreen.style.display = 'none';
+      birthdayScreen.classList.add('visible');
+      launchConfetti();
+    } else if (first !== VALID_FIRST || last !== VALID_LAST) {
+      errorMsg.innerHTML = "Hmm, that name doesn't match. Double-check the spelling and try again.";
+      shakeCard();
+    } else {
+      errorMsg.innerHTML = "Wrong password. Hint: <span class='hint'>your password is the name of the person you love.</span>";
+      shakeCard();
+    }
+  }
+
+  function shakeCard(){
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+  }
+
+  unlockBtn.addEventListener('click', tryUnlock);
+  [firstNameInput, lastNameInput, passwordInput].forEach(el=>{
+    el.addEventListener('keydown', e=>{ if(e.key === 'Enter') tryUnlock(); });
+  });
+
+  // ---- confetti ----
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiPieces = [];
+  const colors = ['#f0c05a', '#ff7a93', '#c9a6ff', '#7fd6c2', '#fff8ec'];
+
+  function resizeCanvas(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function launchConfetti(){
+    confettiPieces = [];
+    for(let i=0; i<110; i++){
+      confettiPieces.push({
+        x: Math.random() * canvas.width,
+        y: -20 - Math.random() * canvas.height,
+        size: 5 + Math.random() * 6,
+        speedY: 2 + Math.random() * 3,
+        speedX: (Math.random() - 0.5) * 2,
+        rotation: Math.random() * 360,
+        rotationSpeed: (Math.random() - 0.5) * 8,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+    }
+    let elapsed = 0;
+    function animate(){
+      ctx.clearRect(0,0,canvas.width, canvas.height);
+      let stillActive = false;
+      confettiPieces.forEach(p=>{
+        p.y += p.speedY;
+        p.x += p.speedX;
+        p.rotation += p.rotationSpeed;
+        if(p.y < canvas.height + 20) stillActive = true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI/180);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+        ctx.restore();
+      });
+      elapsed++;
+      if(stillActive && elapsed < 420){
+        requestAnimationFrame(animate);
+      } else {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+      }
+    }
+    animate();
+  }
+
+  // ---- blow out candles ----
+  const blowBtn = document.getElementById('blow-btn');
+  blowBtn.addEventListener('click', ()=>{
+    document.getElementById('flame1').classList.add('out');
+    document.getElementById('flame2').classList.add('out');
+    blowBtn.textContent = '🎉 Make a wish!';
+    blowBtn.disabled = true;
+    launchConfetti();
+  });
+</script>
+
+</body>
+</html>
